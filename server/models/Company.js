@@ -17,10 +17,9 @@ const companySchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-companySchema.pre('save', async function (next) {
-    if (!this.isModified('passwordHash')) return next();
+companySchema.pre('save', async function () {
+    if (!this.isModified('passwordHash')) return;
     this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
-    next();
 });
 
 companySchema.methods.matchPassword = async function (enteredPassword) {

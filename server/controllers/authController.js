@@ -11,13 +11,14 @@ const registerDeveloper = async (req, res) => {
         const exists = await User.findOne({ email });
         if (exists) return res.status(400).json({ message: 'Email already in use' });
 
-        const user = await User.create({ fullName, email, passwordHash: password });
+        const user = new User({ fullName, email, passwordHash: password });
+        await user.save();
 
         const accessToken = generateAccessToken(user._id, user.role);
         const refreshToken = generateRefreshToken(user._id, user.role);
 
         user.refreshToken = refreshToken;
-        await user.save({ validateBeforeSave: false });
+        user.save();
 
         await sendWelcomeMail({ to: email, name: fullName, role: 'developer' });
 
@@ -51,7 +52,7 @@ const registerCompany = async (req, res) => {
         const refreshToken = generateRefreshToken(company._id, company.role);
 
         company.refreshToken = refreshToken;
-        await company.save({ validateBeforeSave: false });
+        await company.save();
 
         await sendWelcomeMail({ to: email, name: companyName, role: 'company' });
 
@@ -87,7 +88,7 @@ const login = async (req, res) => {
         const refreshToken = generateRefreshToken(account._id, account.role);
 
         account.refreshToken = refreshToken;
-        await account.save({ validateBeforeSave: false });
+        await account.save();
 
         res.status(200).json({
             accessToken,
@@ -143,7 +144,7 @@ const logout = async (req, res) => {
 
         if (account) {
             account.refreshToken = '';
-            await account.save({ validateBeforeSave: false });
+            await account.save();
         }
 
         res.status(200).json({ message: 'Logged out successfully' });
