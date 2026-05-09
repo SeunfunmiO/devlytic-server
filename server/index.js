@@ -14,7 +14,11 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Health check route
+// Routes
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
+// Health check
 app.get('/api/health', (req, res) => {
     res.json({ message: 'Devlytic server is running...' });
 });
