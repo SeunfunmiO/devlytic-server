@@ -124,7 +124,11 @@ const refreshToken = async (req, res) => {
 
         const newAccessToken = generateAccessToken(account._id, account.role);
 
-        res.status(200).json({ accessToken: newAccessToken });
+        // Return role alongside new access token
+        res.status(200).json({
+            accessToken: newAccessToken,
+            role: account.role,
+        });
     } catch (error) {
         res.status(401).json({ message: 'Refresh token expired or invalid' });
     }
