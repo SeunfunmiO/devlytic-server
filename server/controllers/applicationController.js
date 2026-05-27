@@ -1,6 +1,7 @@
 const Application = require('../models/Application');
 const Job = require('../models/Job');
 const User = require('../models/User');
+const { generateMatchScore } = require('../utils/aiMatch');
 
 // Apply to a job (developer)
 const applyToJob = async (req, res) => {
@@ -12,20 +13,42 @@ const applyToJob = async (req, res) => {
         if (!job) return res.status(404).json({ message: 'Job not found' });
         if (job.status === 'closed') return res.status(400).json({ message: 'Job is closed' });
 
-        // Check if already applied
         const existing = await Application.findOne({
             job: jobId,
             developer: req.user.id,
         });
         if (existing) return res.status(400).json({ message: 'Already applied to this job' });
 
+        // Fetch developer profile for AI scoring
+        const developer = await User.findById(req.user.id);
+
+        // Generate AI match score
+        let matchScore = 0;
+        let matchReason = '';
+        let matchStrengths = [];
+        let matchGaps = [];
+
+        try {
+            const aiResult = await generateMatchScore({ developer, job });
+            matchScore = aiResult.score;
+            matchReason = aiResult.reason;
+            matchStrengths = aiResult.strengths;
+            matchGaps = aiResult.gaps;
+        } catch (aiError) {
+            console.error('AI match scoring failed:', aiError.message);
+            // Continue without AI score if it fails
+        }
+
         const application = await Application.create({
             job: jobId,
             developer: req.user.id,
             coverLetter,
+            matchScore,
+            matchReason,
+            matchStrengths,
+            matchGaps,
         });
 
-        // Add application to job and developer
         await Job.findByIdAndUpdate(jobId, {
             $push: { applicants: application._id },
         });

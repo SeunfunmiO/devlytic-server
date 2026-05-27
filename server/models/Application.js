@@ -7,6 +7,8 @@ const applicationSchema = new mongoose.Schema(
         coverLetter: { type: String, default: '' },
         matchScore: { type: Number, default: 0 },
         matchReason: { type: String, default: '' },
+        matchStrengths: [{ type: String }],
+        matchGaps: [{ type: String }],
         status: {
             type: String,
             enum: ['pending', 'reviewed', 'shortlisted', 'interview', 'rejected', 'archived'],
