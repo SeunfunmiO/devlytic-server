@@ -56,6 +56,18 @@ const applyToJob = async (req, res) => {
             $push: { appliedJobs: jobId },
         });
 
+        // After creating the application and updating job/developer
+        // Send notification to company
+        const io = req.app.get('io');
+        await createNotification(io, {
+            recipient: job.company,
+            recipientRole: 'company',
+            type: 'new_application',
+            message: `${developer.fullName} applied for your job: ${job.title}`,
+            relatedJob: jobId,
+            relatedApplication: application._id,
+        });
+
         res.status(201).json({ application });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -113,6 +125,17 @@ const updateApplicationStatus = async (req, res) => {
 
         application.status = status;
         await application.save();
+
+        // After updating the status
+        const io = req.app.get('io');
+        await createNotification(io, {
+            recipient: application.developer,
+            recipientRole: 'developer',
+            type: 'application_update',
+            message: `Your application for ${application.job.title} has been ${status}`,
+            relatedJob: application.job._id,
+            relatedApplication: application._id,
+        });
 
         res.status(200).json({ application });
     } catch (error) {
