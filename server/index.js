@@ -51,6 +51,7 @@ const applicationRoutes = require('./routes/applicationRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/fetch', fetchRoutes);
@@ -59,6 +60,8 @@ app.use('/api/applications', applicationRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/upload', uploadRoutes);
+
 
 // Health check
 app.get('/api/health', (req, res) => {
