@@ -2,6 +2,7 @@ const Application = require('../models/Application');
 const Job = require('../models/Job');
 const User = require('../models/User');
 const { generateMatchScore } = require('../utils/aiMatch');
+const { createNotification } = require('../utils/notify');
 
 // Apply to a job (developer)
 const applyToJob = async (req, res) => {
