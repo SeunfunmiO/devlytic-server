@@ -44,6 +44,7 @@ const applyToJob = async (req, res) => {
             job: jobId,
             developer: req.user.id,
             coverLetter,
+            resumeUrl: developer.resumeUrl || '',
             matchScore,
             matchReason,
             matchStrengths,
